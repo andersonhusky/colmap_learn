@@ -399,7 +399,7 @@ void IncrementalMapperController::Reconstruct(
                                                   "multiple are given.";
 
   for (int num_trials = 0; num_trials < options_->init_num_trials;
-       ++num_trials) {
+       ++num_trials) {  
     BlockIfPaused();
     if (IsStopped()) {
       break;

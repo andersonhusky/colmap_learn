@@ -295,6 +295,11 @@ void Reconstruction::DeleteAllPoints2DAndPoints3D() {
   }
 }
 
+/********************************
+function:将传入的id对应的image设为完成注册，并将id放入reg_image_ids_中
+prams:
+result:
+*********************************/
 void Reconstruction::RegisterImage(const image_t image_id) {
   class Image& image = Image(image_id);
   if (!image.IsRegistered()) {

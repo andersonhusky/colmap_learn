@@ -143,6 +143,14 @@ void IncrementalMapper::EndReconstruction(const bool discard) {
   triangulator_.reset();
 }
 
+/********************************
+function:找到初始的一对图片
+prams:
+  options：重建配置
+  image_id1：存放找到的初始化图片1
+  image_id2：存放找到的初始化图片2
+result:
+*********************************/
 bool IncrementalMapper::FindInitialImagePair(const Options& options,
                                              image_t* image_id1,
                                              image_t* image_id2) {
@@ -199,6 +207,12 @@ bool IncrementalMapper::FindInitialImagePair(const Options& options,
   return false;
 }
 
+/********************************
+function:初始化完成后寻找下一帧
+prams:
+  options：重建配置
+result:
+*********************************/
 std::vector<image_t> IncrementalMapper::FindNextImages(const Options& options) {
   CHECK_NOTNULL(reconstruction_);
   CHECK(options.Check());
@@ -255,6 +269,14 @@ std::vector<image_t> IncrementalMapper::FindNextImages(const Options& options) {
   return ranked_images_ids;
 }
 
+/********************************
+function:注册找到的初始帧对
+prams:
+  options：重建配置
+  image_id1：存放找到的初始化图片1
+  image_id2：存放找到的初始化图片2
+result:
+*********************************/
 bool IncrementalMapper::RegisterInitialImagePair(const Options& options,
                                                  const image_t image_id1,
                                                  const image_t image_id2) {
@@ -356,7 +378,7 @@ bool IncrementalMapper::RegisterNextImage(const Options& options,
   num_reg_trials_[image_id] += 1;
 
   // Check if enough 2D-3D correspondences.
-  if (image.NumVisiblePoints3D() <
+  if (image.NumVisiblePoints3D() < 
       static_cast<size_t>(options.abs_pose_min_num_inliers)) {
     return false;
   }
@@ -801,6 +823,14 @@ void IncrementalMapper::ClearModifiedPoints3D() {
   triangulator_->ClearModifiedPoints3D();
 }
 
+/********************************
+function:找到初始化的第一张图片
+prams:
+  options：IncrementalMapper里的options结构体
+result:
+  筛选corespondence有效,被用于初始化次数有限,未注册过的图片,返回对这些图片按照有无焦距，correspindence大小排序后的结果
+  return:image_ids
+*********************************/
 std::vector<image_t> IncrementalMapper::FindFirstInitialImage(
     const Options& options) const {
   // Struct to hold meta-data for ranking images.
@@ -871,6 +901,15 @@ std::vector<image_t> IncrementalMapper::FindFirstInitialImage(
   return image_ids;
 }
 
+/********************************
+function:根据已有的第一张图片找到初始化的第二张图片
+prams:
+  options：IncrementalMapper里的options结构体
+  image_id1：需要匹配的第一帧
+result:
+  筛选第一张图片的corespondence中,未注册过并内点数满足要求的图片,返回对这些图片按照有无焦距，correspindence大小排序后的结果
+  return:image_ids
+*********************************/
 std::vector<image_t> IncrementalMapper::FindSecondInitialImage(
     const Options& options, const image_t image_id1) const {
   const CorrespondenceGraph& correspondence_graph =
@@ -1111,6 +1150,14 @@ std::vector<image_t> IncrementalMapper::FindLocalBundle(
   return local_bundle_image_ids;
 }
 
+/********************************
+function:因为有新注册
+  更新num_reg_images_per_camera_
+  更新num_regs_for_image
+  按照图片注册次数更新num_total_reg_images_ 或 num_shared_reg_images_
+prams:
+result:
+*********************************/
 void IncrementalMapper::RegisterImageEvent(const image_t image_id) {
   const Image& image = reconstruction_->Image(image_id);
   size_t& num_reg_images_for_camera =
@@ -1126,6 +1173,11 @@ void IncrementalMapper::RegisterImageEvent(const image_t image_id) {
   }
 }
 
+/********************************
+function:取消注册图片
+prams:
+result:
+*********************************/
 void IncrementalMapper::DeRegisterImageEvent(const image_t image_id) {
   const Image& image = reconstruction_->Image(image_id);
   size_t& num_reg_images_for_camera =
@@ -1142,6 +1194,16 @@ void IncrementalMapper::DeRegisterImageEvent(const image_t image_id) {
   }
 }
 
+/********************************
+function:从两帧间恢复
+prams:
+  options：IncrementalMapper里的options结构体
+  image_id1：找到的第一帧
+  image_id1：找到的第二帧
+result:
+  使用TwoViewGeometry类从两帧之间恢复geometry，将恢复结果放在prev_init_image_pair_id_和prev_init_two_view_geometry中
+  return:恢复是否成功
+*********************************/
 bool IncrementalMapper::EstimateInitialTwoViewGeometry(
     const Options& options, const image_t image_id1, const image_t image_id2) {
   const image_pair_t image_pair_id =
