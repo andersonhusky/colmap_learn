@@ -416,6 +416,18 @@ void IncrementalTriangulator::ClearCaches() {
   merge_trials_.clear();
 }
 
+/********************************
+function:通过递归找到当前帧当前点的所有可三角化匹配
+prams:
+  options：三角化配置
+  image_id：当前帧id
+  point2D_idx：当前2D点id
+  transitivity：递归最大深度
+  corrs_data：找到的匹配数据
+result:
+  corrs_data存储找到的匹配数据
+  return-匹配结果中已经有三角化点的匹配数目num_triangulated
+*********************************/
 size_t IncrementalTriangulator::Find(const Options& options,
                                      const image_t image_id,
                                      const point2D_t point2D_idx,
@@ -458,6 +470,15 @@ size_t IncrementalTriangulator::Find(const Options& options,
   return num_triangulated;
 }
 
+/********************************
+function:从匹配中三角化点
+prams:
+  options：三角化配置
+  corrs_data：找到的匹配关系，是一系列信息点集合
+result:
+  从匹配中寻找优秀的三角化点
+  return-track的长度，即最终遇到的元素个数
+*********************************/
 size_t IncrementalTriangulator::Create(
     const Options& options, const std::vector<CorrData>& corrs_data) {
   // Extract correspondences without an existing triangulated observation.
@@ -542,6 +563,16 @@ size_t IncrementalTriangulator::Create(
   return track.Length();
 }
 
+/********************************
+function:预先遍历已经有三角化点的匹配点，为当前帧关键点选取最有匹配
+prams:
+  options：三角化配置
+  ref_corr_data：参考帧数据，即当前帧关键点
+  corrs_data：找到的匹配关系
+result:
+  选取视差角最小的点作为三角化点
+  return:有无找到已有的三角化点
+*********************************/
 size_t IncrementalTriangulator::Continue(
     const Options& options, const CorrData& ref_corr_data,
     const std::vector<CorrData>& corrs_data) {

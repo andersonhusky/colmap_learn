@@ -129,6 +129,18 @@ void TriangulationEstimator::Residuals(const std::vector<X_t>& point_data,
   }
 }
 
+/********************************
+function:用ransac类计算三角化坐标
+prams:
+  options：三角化配置
+  point_data：匹配点的像素坐标+世界坐标
+  pose_data：世界坐标系到相机坐标系的变换矩阵+世界坐标系下光心位置+对应相机
+  inlier_mask：表示是否为内点的vector
+  xyz：三角化的3D坐标
+result:
+  inlier_mask,xyz保存结果
+  return-成功与否
+*********************************/
 bool EstimateTriangulation(
     const EstimateTriangulationOptions& options,
     const std::vector<TriangulationEstimator::PointData>& point_data,
