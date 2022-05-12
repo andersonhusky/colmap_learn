@@ -52,6 +52,16 @@ void TriangulationEstimator::SetResidualType(const ResidualType residual_type) {
   residual_type_ = residual_type;
 }
 
+/********************************
+function:多两个点或多个点中计算三角化
+prams:
+  point_data：点数据
+  pose_data：位姿数据
+result:
+  只有一对匹配，两视角三角化
+  有多个点，从多点中三角化
+  return-通过角度检验和深度检验的结果
+*********************************/
 std::vector<TriangulationEstimator::M_t> TriangulationEstimator::Estimate(
     const std::vector<X_t>& point_data,
     const std::vector<Y_t>& pose_data) const {
@@ -108,6 +118,16 @@ std::vector<TriangulationEstimator::M_t> TriangulationEstimator::Estimate(
   return std::vector<M_t>();
 }
 
+/********************************
+function:计算需要的三角化误差
+prams:
+  point_data：点数据
+  pose_data：位姿数据
+  xyz：三角化的点
+  residuals：保存的残差
+result:
+  residuals中保存计算的残差结果
+*********************************/
 void TriangulationEstimator::Residuals(const std::vector<X_t>& point_data,
                                        const std::vector<Y_t>& pose_data,
                                        const M_t& xyz,

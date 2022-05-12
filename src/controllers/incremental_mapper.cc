@@ -74,6 +74,14 @@ void AdjustGlobalBundle(const IncrementalMapperOptions& options,
   }
 }
 
+/********************************
+function:循环进行局部BA优化
+prams:
+  options：重建配置
+  image_id：图片id
+  mapper：incremental_mapper类
+result:
+*********************************/
 void IterativeLocalRefinement(const IncrementalMapperOptions& options,
                               const image_t image_id,
                               IncrementalMapper* mapper) {

@@ -89,6 +89,14 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::LORANSAC(
 template <typename Estimator, typename LocalEstimator, typename SupportMeasurer,
           typename Sampler>
 typename LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Report
+
+/********************************
+function:根据已有数据，通过随机采样数据和Ransac计算鲁棒的结果
+prams:
+  X：自变量
+  Y：应变量
+result:
+*********************************/
 LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
     const std::vector<typename Estimator::X_t>& X,
     const std::vector<typename Estimator::Y_t>& Y) {

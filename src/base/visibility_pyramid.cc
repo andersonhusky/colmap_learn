@@ -37,6 +37,11 @@ namespace colmap {
 
 VisibilityPyramid::VisibilityPyramid() : VisibilityPyramid(0, 0, 0) {}
 
+/********************************
+function:
+prams:
+result:
+*********************************/
 VisibilityPyramid::VisibilityPyramid(const size_t num_levels,
                                      const size_t width, const size_t height)
     : width_(width), height_(height), score_(0), max_score_(0) {

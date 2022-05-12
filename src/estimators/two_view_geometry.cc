@@ -229,6 +229,16 @@ bool TwoViewGeometry::EstimateRelativePose(
   return true;
 }
 
+/********************************
+function:确定匹配对类型
+prams:
+  camera1、camera2：匹配对的相机类
+  points1、points2：匹配对的特征点
+  matches：匹配对找到的匹配
+  options：TwoViewGeometry::Options
+result:
+  判断的匹配对类型放入config中
+*********************************/
 void TwoViewGeometry::EstimateCalibrated(
     const Camera& camera1, const std::vector<Eigen::Vector2d>& points1,
     const Camera& camera2, const std::vector<Eigen::Vector2d>& points2,
@@ -478,6 +488,17 @@ void TwoViewGeometry::EstimateHomography(
   }
 }
 
+/********************************
+function:检测匹配关系是否受水印影响
+prams:
+  camera1、camera2：匹配对的相机类
+  points1、points2：匹配对的特征点
+  num_inliers：内点数目
+  inlier_mask：内点记录
+  options：TwoViewGeometry::Options
+result:
+  返回是否判定为水印图
+*********************************/
 bool TwoViewGeometry::DetectWatermark(
     const Camera& camera1, const std::vector<Eigen::Vector2d>& points1,
     const Camera& camera2, const std::vector<Eigen::Vector2d>& points2,
