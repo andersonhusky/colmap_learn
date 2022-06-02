@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
   commands.emplace_back("feature_extractor", &RunFeatureExtractor);
   commands.emplace_back("feature_importer", &RunFeatureImporter);
   commands.emplace_back("hierarchical_mapper", &RunHierarchicalMapper);
+
   commands.emplace_back("image_deleter", &RunImageDeleter);
   commands.emplace_back("image_filterer", &RunImageFilterer);
   commands.emplace_back("image_rectifier", &RunImageRectifier);
@@ -118,7 +119,9 @@ int main(int argc, char** argv) {
   commands.emplace_back("image_undistorter", &RunImageUndistorter);
   commands.emplace_back("image_undistorter_standalone",
                         &RunImageUndistorterStandalone);
+
   commands.emplace_back("mapper", &RunMapper);
+  
   commands.emplace_back("matches_importer", &RunMatchesImporter);
   commands.emplace_back("model_aligner", &RunModelAligner);
   commands.emplace_back("model_analyzer", &RunModelAnalyzer);
@@ -130,6 +133,7 @@ int main(int argc, char** argv) {
                         &RunModelOrientationAligner);
   commands.emplace_back("model_splitter", &RunModelSplitter);
   commands.emplace_back("model_transformer", &RunModelTransformer);
+
   commands.emplace_back("patch_match_stereo", &RunPatchMatchStereo);
   commands.emplace_back("point_filtering", &RunPointFiltering);
   commands.emplace_back("point_triangulator", &RunPointTriangulator);
