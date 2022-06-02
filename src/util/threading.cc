@@ -35,6 +35,7 @@
 
 namespace colmap {
 
+// 构造函数，初始化成员变量+注册起始末尾callback函数
 Thread::Thread()
     : started_(false),
       stopped_(false),
@@ -47,6 +48,9 @@ Thread::Thread()
   RegisterCallback(FINISHED_CALLBACK);
 }
 
+// 线程启动函数
+// 等待之前的线程完成;
+// 用当前Run函数构建thread，并设置标志位
 void Thread::Start() {
   std::unique_lock<std::mutex> lock(mutex_);
   CHECK(!started_ || finished_);
@@ -62,6 +66,7 @@ void Thread::Start() {
   setup_valid_ = false;
 }
 
+// 停止函数？设置stoped_标志位，调用Resume()恢复线程
 void Thread::Stop() {
   {
     std::unique_lock<std::mutex> lock(mutex_);
@@ -70,11 +75,13 @@ void Thread::Stop() {
   Resume();
 }
 
+// 暂停函数，设置paused_标志位
 void Thread::Pause() {
   std::unique_lock<std::mutex> lock(mutex_);
   paused_ = true;
 }
 
+// 恢复函数，设置paused_标志位，调用notify_all()恢复阻塞线程
 void Thread::Resume() {
   std::unique_lock<std::mutex> lock(mutex_);
   if (paused_) {
@@ -83,6 +90,7 @@ void Thread::Resume() {
   }
 }
 
+// 等待函数，等待thread_结束（用join()实现）
 void Thread::Wait() {
   if (thread_.joinable()) {
     thread_.join();
@@ -114,16 +122,19 @@ bool Thread::IsFinished() {
   return finished_;
 }
 
+// 添加callack函数
 void Thread::AddCallback(const int id, const std::function<void()>& func) {
   CHECK(func);
   CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
   callbacks_.at(id).push_back(func);
 }
 
+// 注册一个callback函数，只是留一个位置，并没有实际的函数
 void Thread::RegisterCallback(const int id) {
   callbacks_.emplace(id, std::list<std::function<void()>>());
 }
 
+// 调用对应序号的callback函数
 void Thread::Callback(const int id) const {
   CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
   for (const auto& callback : callbacks_.at(id)) {
@@ -135,6 +146,7 @@ std::thread::id Thread::GetThreadId() const {
   return std::this_thread::get_id();
 }
 
+// 当前设置有效，取消CheckValidSetup()的阻塞
 void Thread::SignalValidSetup() {
   std::unique_lock<std::mutex> lock(mutex_);
   CHECK(!setup_);
@@ -143,6 +155,7 @@ void Thread::SignalValidSetup() {
   setup_condition_.notify_all();
 }
 
+// 当前设置无效，取消CheckValidSetup()的阻塞
 void Thread::SignalInvalidSetup() {
   std::unique_lock<std::mutex> lock(mutex_);
   CHECK(!setup_);
@@ -153,6 +166,7 @@ void Thread::SignalInvalidSetup() {
 
 const class Timer& Thread::GetTimer() const { return timer_; }
 
+// 当paused_被置位时阻塞，直到pause_condition_被resume才恢复
 void Thread::BlockIfPaused() {
   std::unique_lock<std::mutex> lock(mutex_);
   if (paused_) {
@@ -164,6 +178,7 @@ void Thread::BlockIfPaused() {
   }
 }
 
+// 当setup_被置否时阻塞，直到setup_condition_被resume才恢复
 bool Thread::CheckValidSetup() {
   std::unique_lock<std::mutex> lock(mutex_);
   if (!setup_) {
@@ -172,6 +187,7 @@ bool Thread::CheckValidSetup() {
   return setup_valid_;
 }
 
+// thread构造时的执行函数
 void Thread::RunFunc() {
   Callback(STARTED_CALLBACK);
   Run();

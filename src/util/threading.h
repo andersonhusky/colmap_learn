@@ -106,11 +106,11 @@ class Thread {
   virtual ~Thread() = default;
 
   // Control the state of the thread.
-  virtual void Start();
-  virtual void Stop();
-  virtual void Pause();
-  virtual void Resume();
-  virtual void Wait();
+  virtual void Start();		// 线程启动函数，等待之前的线程完成，用当前Run函数构建thread，并设置started_标志位
+  virtual void Stop();		// 线程停止函数？设置stoped_标志位，调用Resume()恢复线程
+  virtual void Pause();		// 线程暂停函数，设置paused_标志位
+  virtual void Resume();	// 线程恢复函数，设置paused_标志位，调用notify_all()唤醒阻塞线程
+  virtual void Wait();		// 等待函数，等待thread_结束（用join()实现）
 
   // Check the state of the thread.
   bool IsStarted();
@@ -162,12 +162,12 @@ class Thread {
   // Wrapper around the main run function to set the finished flag.
   void RunFunc();
 
-  std::thread thread_;
-  std::mutex mutex_;
-  std::condition_variable pause_condition_;
-  std::condition_variable setup_condition_;
+  std::thread thread_;			// 线程
+  std::mutex mutex_;			// 互斥量
+  std::condition_variable pause_condition_;		// 用于暂停的条件变量
+  std::condition_variable setup_condition_;		// 用于设置的条件变量
 
-  Timer timer_;
+  Timer timer_;					// 计时器
 
   bool started_;
   bool stopped_;
@@ -177,7 +177,7 @@ class Thread {
   bool setup_;
   bool setup_valid_;
 
-  std::unordered_map<int, std::list<std::function<void()>>> callbacks_;
+  std::unordered_map<int, std::list<std::function<void()>>> callbacks_;		// callback函数映射表
 };
 
 // A thread pool class to submit generic tasks (functors) to a pool of workers:
